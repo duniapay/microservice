@@ -8,3 +8,5 @@ coverage
 lib
 .eslintcache
 .DS_Store
+dist/pre-start/env/production.env
+src/pre-start/env/production.env
