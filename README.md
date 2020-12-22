@@ -1,4 +1,4 @@
-# cloud-run-typescript-template
+# Severless-Microservice-template
 
 Get started quickly with typescript on Google Cloud Run
 
