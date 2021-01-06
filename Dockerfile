@@ -1,24 +1,30 @@
-# Use the official lightweight Node.js 12 image.
-# https://hub.docker.com/_/node
-FROM node:12-slim
+FROM node:12.13-alpine As development
 
-# Create and change to the app directory.
+ENV NODE_ENV=development
+
 WORKDIR /usr/src/app
 
-# Copy application dependency manifests to the container image.
-# A wildcard is used to ensure both package.json AND package-lock.json are copied.
-# Copying this separately prevents re-running npm install on every code change.
-COPY package.json yarn.lock ./
+COPY package*.json ./
 
-# Install production dependencies.
-RUN yarn install --frozen-lockfile --production
+RUN npm install --only=development
 
-# Copy local code to the container image.
-COPY . ./
+COPY . .
 
-RUN yarn build
+RUN npm run build
 
-RUN rm -rf src
+FROM node:12.13-alpine as production
 
-# Run the web service on container startup.
-CMD [ "npm", "start" ]
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install --only=production
+
+COPY . .
+
+COPY --from=development /usr/src/app/dist ./dist
+
+CMD ["node", "dist/main"]

@@ -1,0 +1,69 @@
+version: '3.7'
+
+services:
+  db-mongo:
+    container_name: cats_mongodb
+    env_file: ./.development.env # CHANGE MANUALLY BY ENV?
+    environment: 
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      # the right hand side are loaded from .env
+    image: mongo:${DB_VERSION}
+    restart: always
+    networks:
+      - netty
+    ports:
+      - "27017:27017"
+    volumes:
+    # Can't do this on Docker for Mac - see Caveats: Where to Store Data [https://hub.docker.com/_/mongo]
+    #- ./mongo/data:/data/db #Helps to store MongoDB data in `./mongo/data`    
+    # copies over the seed data into mongo container to initialize users and database
+     - ./docker-entrypoint-initdb.d/seed.js:/docker-entrypoint-initdb.d/seed.js:ro
+
+  db-mongo-admin:
+    container_name: service_mongoadmin
+    image: mongo-express
+    environment: 
+      - ME_CONFIG_MONGODB_SERVER=db-mongo
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - "8081:8081"
+    networks:
+      - netty
+    depends_on: 
+      - db-mongo
+  main:
+    container_name: main
+    restart: always
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - 9229:9229
+    command: npm run start:dev
+    env_file:
+      - .development.env
+    networks:
+      - netty
+    depends_on:
+      - redis
+      - db-mongo-admin
+      - db-mongo
+  redis:
+    container_name: redis
+    image: redis:5
+    networks:
+      - netty
+  
+networks:
+  netty:
+volumes:
+  pgdata:
