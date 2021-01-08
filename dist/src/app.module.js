@@ -20,10 +20,14 @@ AppModule = __decorate([
     common_1.Module({
         imports: [
             serve_static_1.ServeStaticModule.forRoot({
-                rootPath: path_1.join(__dirname, '..', 'dist'),
+                rootPath: path_1.join(__dirname, '..', 'public'),
                 exclude: ['/api*'],
             }),
-            config_1.ConfigModule.forRoot({ load: [configuration_1.default] }),
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                load: [configuration_1.default],
+                cache: true,
+            }),
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

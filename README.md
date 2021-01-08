@@ -44,6 +44,49 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+Ensure also that [Docker is installed](https://docs.docker.com/engine/install) on your work station
+
+## Setting up the app for use with Docker
+1. Add Dockerfile
+2. Add docker-compose.yml
+3. Add unnecessary files to .gitignore
+4. Add .dockerignore and include the unnecessary files
+5. Add nodemon-docker-debug.json
+6. Add ```"debug": "nodemon -L --config nodemon-docker-debug.json"``` script to package.json
+7. Configure VS Code for [debugging the node js app with a container](https://code.visualstudio.com/docs/containers/debug-node)
+
+
+## Running the app with Docker
+```sh
+# Build the image
+$ docker build -t docker-nest-js:v1.0 .
+
+# Run the image interactively
+$ docker run -it -p 3000:3000 docker-nest-js:v1.0
+```
+
+
+## Using Docker Compose
+```sh
+# Build the docker image
+$ docker-compose build
+
+# Start and login to the container
+$ docker-compose up -d
+$ docker-compose exec app sh
+```
+
+## Other useful Docker commands
+```sh
+# Get the container ID
+$ docker ps
+
+# View logs
+$ docker logs <container id>
+
+# Enter the container (In alpine, use sh because bash is not installed by default)
+$ docker exec -it <container id> /bin/sh
+```
 
 ## Test
 
