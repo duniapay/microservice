@@ -42,7 +42,7 @@ services:
   #   ports:
   #     - 6379:6379
   api:
-    container_name: customer-api
+    container_name: serverless-starter
     build:
       context: ./
       dockerfile: Dockerfile

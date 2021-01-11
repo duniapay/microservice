@@ -13,6 +13,7 @@ const app_service_1 = require("./app.service");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
 const config_1 = require("@nestjs/config");
+const auth_module_1 = require("./auth/auth.module");
 const configuration_1 = require("./config/configuration");
 let AppModule = class AppModule {
 };
@@ -28,6 +29,7 @@ AppModule = __decorate([
                 load: [configuration_1.default],
                 cache: true,
             }),
+            auth_module_1.AuthModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
